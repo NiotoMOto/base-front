@@ -32,14 +32,14 @@ router.use(morgan('combined'))
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 
 router.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/?googleAuth=failure' }),
   (req, res) => res.redirect('/'))
 
 router.get('/auth/facebook',
   passport.authenticate('facebook'))
 
 router.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  passport.authenticate('facebook', { failureRedirect: '/' }),
   (req, res) => res.redirect('/'))
 
 router.post('/login',

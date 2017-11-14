@@ -1,5 +1,6 @@
 <template>
   <div class="cs-search">
+    <form v-on:submit.prevent="search">
      <v-input
         class="cs-search_sport"
         id="sport"
@@ -8,14 +9,12 @@
         type="text"
         :placeholder="$t('inputs.sport')"
       />
-      <v-input
-        class="cs-search_city"
-        id="city"
-        :value="city"
-        name="city"
-        type="text"
-        :placeholder="$t('inputs.city')"
-      />
+      <v-select
+        v-bind:items="sports"
+        v-model="sport"
+        label="Select"
+        autocomplete
+      ></v-select>
       <v-input
         class="cs-search_date"
         id="date"
@@ -27,6 +26,7 @@
       <button class="cta cta-search" type="button">
         {{ $t('buttons.search') }}
       </button>
+    </form>
   </div>
 </template>
 
@@ -36,6 +36,7 @@ export default {
   components: {
     vInput
   },
+  props: ['sports'],
   data: () => ({
     users: [],
     form: 'search',
@@ -51,6 +52,11 @@ export default {
     },
     date () {
       return this.$store.state.forms.search.date
+    }
+  },
+  methods: {
+    updateField (field, value) {
+      this.$store.commit('forms/updateField', { form: this.form, field, value })
     }
   }
 }

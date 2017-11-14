@@ -1,4 +1,5 @@
 const bodyParser = require('body-parser')
+const nodeExternals = require('webpack-node-externals')
 const session = require('express-session')
 const config = require('./config/')
 const WebfontPlugin = require('webpack-webfont').default
@@ -28,7 +29,8 @@ module.exports = {
   ** Build configuration
   */
   css: [
-    '@/assets/css/main.scss'
+    '@/assets/css/main.scss',
+    '@/assets/stylus/app.styl'
   ],
 
   modules: [
@@ -51,6 +53,16 @@ module.exports = {
     middleware: 'i18n'
   },
   build: {
+    babel: {
+      plugins: [
+        ['transform-imports', {
+          'vuetify': {
+            'transform': 'vuetify/es5/components/${member}',
+            'preventFullImport': true
+          }
+        }]
+      ]
+    },
     /*
     ** Run ESLint on save
     */
@@ -63,6 +75,23 @@ module.exports = {
           exclude: /(node_modules)/
         })
       }
+      if (ctx.isServer) {
+        config.externals = [
+          nodeExternals({
+            whitelist: [/^vuetify/]
+          })
+        ]
+      }
+      config.module.rules.forEach(rule => {
+        if (rule.test.toString() === '/\\.styl(us)?$/') {
+          rule.use.push({
+            loader: 'vuetify-loader',
+            options: {
+              theme: path.resolve('./assets/stylus/theme.styl')
+            }
+          })
+        }
+      })
     },
     plugins: [
       new WebfontPlugin({
@@ -77,7 +106,7 @@ module.exports = {
         }
       })
     ],
-    vendor: ['axios', 'vue-i18n']
+    vendor: ['axios', 'vue-i18n', '~/plugins/vuetify.js']
   },
   serverMiddleware: [
     // body-parser middleware
@@ -93,7 +122,8 @@ module.exports = {
     // We add /api/login & /api/logout routes
     '~/api'
   ],
-  plugins: ['~/plugins/i18n.js'],
+  plugins: ['~/plugins/i18n.js', '~/plugins/vuetify'],
+  extractCSS: true,
   generate: {
     routes: [
       '/', '/login', '/register', '/annonces/create',

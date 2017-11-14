@@ -28,7 +28,7 @@ export default {
     }
   },
   data: () => ({
-    annonces: []
+    sports: []
   }),
   methods: {
     refreshAnnonces: function (e) {
@@ -38,8 +38,8 @@ export default {
     }
   },
   asyncData (context) {
-    return context.app.$axios.get('annonces').then(res => (
-      { annonces: res.data }
+    return context.app.$axios.get('sports').then(res => (
+      { sports: res.data }
     ))
   }
 }
